@@ -17,6 +17,8 @@ const (
 	up
 )
 
+var directions = [...]direction{right, down, left, up}
+
 type vector struct {
 	X int
 	Y int
@@ -103,9 +105,9 @@ func (b board) debug_print() {
 }
 
 var game = board{}
+var current_direction = left
 
 func main() {
-
 	for {
 		input := get_input()
 		game.update(input)
@@ -133,5 +135,5 @@ func get_input() []vector {
 }
 
 func move() {
-	left.print_command()
+
 }
