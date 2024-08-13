@@ -149,28 +149,25 @@ func get_input() []vector {
 }
 
 func move() {
-	if game.is_safe(current_pos.add_direction(current_direction)) {
-		current_direction.print_command()
-		return
+	var pot_dir_open [4]int
+
+	for i, dir := range directions {
+		pot_dir_open[i] = open_square_count(current_pos, dir)
 	}
 
-	var best_direction direction
-	var best_open_count int
+	if pot_dir_open[current_direction] <= 1 {
+		var max int
+		var max_index int
 
-	for _, dir := range directions {
-		if game.is_safe(current_pos.add_direction(dir)) {
-			open_count := open_square_count(current_pos, dir)
-
-			fmt.Fprintf(os.Stderr, "Tested %d, %d open squares\n", dir.get_vector(), open_count)
-
-			if open_count > best_open_count {
-				best_direction = dir
-				best_open_count = open_count
+		for index, count := range pot_dir_open {
+			if max < count {
+				max = count
+				max_index = index
 			}
 		}
-	}
 
-	current_direction = best_direction
+		current_direction = direction(max_index)
+	}
 
 	current_direction.print_command()
 }
