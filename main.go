@@ -58,6 +58,15 @@ func (v vector) get_index() int {
 	return v.Y*width + v.X
 }
 
+func (v vector) add(x vector) vector {
+	return vector{v.X + x.X, v.Y + v.X}
+}
+
+func (v *vector) add_self(x vector) {
+	v.X += x.X
+	v.Y += x.Y
+}
+
 func (b *board) set(pos vector, value int) {
 	b[pos.get_index()] = value
 }
