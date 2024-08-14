@@ -105,6 +105,14 @@ func (b *board) update(input []vector) {
 	}
 }
 
+func (b *board) clear_player(player int) {
+	for index, value := range b {
+		if value == player {
+			b[index] = 0
+		}
+	}
+}
+
 func (b board) debug_print() {
 	for y := 0; y < height; y++ {
 		for x := 0; x < width; x++ {
@@ -152,6 +160,8 @@ func get_input() []vector {
 		fmt.Scan(&X0, &Y0, &X1, &Y1)
 
 		if X0 == -1 {
+			// HACK: side effect, this shouldn't happen here
+			game.clear_player(i + 1)
 			continue
 		}
 
