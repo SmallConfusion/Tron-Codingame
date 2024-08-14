@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"time"
 )
 
 const (
@@ -119,9 +120,16 @@ var (
 func main() {
 	for {
 		input := get_input()
-		game.update(input)
 
+		start := time.Now()
+
+		game.update(input)
 		move()
+
+		elapsed := time.Since(start)
+		extra := (time.Millisecond * 100) - elapsed
+
+		fmt.Fprintf(os.Stderr, "Execution time: %s\nExtra time: %s", elapsed, extra)
 	}
 }
 
