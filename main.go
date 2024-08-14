@@ -11,6 +11,10 @@ const (
 	height = 20
 )
 
+// ---------- direction ----------
+
+type direction int
+
 const (
 	right direction = iota
 	down
@@ -19,15 +23,6 @@ const (
 )
 
 var directions = [...]direction{right, down, left, up}
-
-type vector struct {
-	X int
-	Y int
-}
-
-type direction int
-
-type board [width * height]int
 
 func (d direction) get_vector() vector {
 	switch d {
@@ -57,8 +52,11 @@ func (d direction) print_command() {
 	}
 }
 
-func (v vector) get_index() int {
-	return v.Y*width + v.X
+// ---------- vector ----------
+
+type vector struct {
+	X int
+	Y int
 }
 
 func (v vector) add(x vector) vector {
@@ -72,6 +70,14 @@ func (v vector) add_direction(x direction) vector {
 func (v vector) multiply_scalar(x int) vector {
 	return vector{v.X * x, v.Y * x}
 }
+
+func (v vector) get_index() int {
+	return v.Y*width + v.X
+}
+
+// ---------- board ----------
+
+type board [width * height]int
 
 func (b *board) set(pos vector, value int) {
 	b[pos.get_index()] = value
@@ -109,6 +115,8 @@ func (b board) debug_print() {
 		fmt.Fprintln(os.Stderr)
 	}
 }
+
+// ---------- main ----------
 
 var (
 	game = board{}
