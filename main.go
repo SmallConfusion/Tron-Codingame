@@ -99,12 +99,6 @@ func (b board) is_safe(pos vector) bool {
 	return safe
 }
 
-func (b *board) update(input []vector) {
-	for i, vec := range input {
-		b.set(vec, i+1)
-	}
-}
-
 func (b *board) clear_player(player int) {
 	for index, value := range b {
 		if value == player {
@@ -135,11 +129,9 @@ var (
 
 func main() {
 	for {
-		input := get_input()
-
 		start := time.Now()
 
-		game.update(input)
+		handle_input()
 		move()
 
 		elapsed := time.Since(start)
@@ -149,7 +141,7 @@ func main() {
 	}
 }
 
-func get_input() []vector {
+func handle_input() []vector {
 	var N, P int
 	fmt.Scan(&N, &P)
 
@@ -160,15 +152,12 @@ func get_input() []vector {
 		fmt.Scan(&X0, &Y0, &X1, &Y1)
 
 		if X0 == -1 {
-			// HACK: side effect, this shouldn't happen here
 			game.clear_player(i + 1)
 			continue
 		}
 
-		// otherwise we might miss the end of opponent
-		input = append(input, vector{X0, Y0})
-
-		input = append(input, vector{X1, Y1})
+		game.set(vector{X0, Y0}, i+1)
+		game.set(vector{X1, Y1}, i+1)
 
 		if i == P {
 			current_pos = vector{X1, Y1}
