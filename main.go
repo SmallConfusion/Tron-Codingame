@@ -151,6 +151,10 @@ func get_input() []vector {
 		var X0, Y0, X1, Y1 int
 		fmt.Scan(&X0, &Y0, &X1, &Y1)
 
+		if X0 == -1 {
+			continue
+		}
+
 		// otherwise we might miss the end of opponent
 		input = append(input, vector{X0, Y0})
 
