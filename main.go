@@ -11,6 +11,37 @@ const (
 	HEIGHT = 20
 )
 
+// ---------- timing ----------
+
+type Timing struct {
+	startTime time.Time
+	endTime   time.Time
+	name      string
+}
+
+func NewTiming(n string) Timing {
+	t := Timing{}
+	t.name = n
+	t.Start()
+	return t
+}
+
+func (t *Timing) Start() {
+	t.startTime = time.Now()
+}
+
+func (t *Timing) Stop() {
+	t.endTime = time.Now()
+}
+
+func (t Timing) GetElapsed() time.Duration {
+	return t.endTime.Sub(t.startTime)
+}
+
+func (t Timing) Print() {
+	fmt.Fprintf(os.Stderr, "Time of %v: %v\n", t.name, t.GetElapsed())
+}
+
 // ---------- direction ----------
 
 type Direction int
@@ -129,19 +160,17 @@ var (
 
 func main() {
 	for {
-		start := time.Now()
+		totalTime := NewTiming("Total")
 
-		handle_input()
+		handleInput()
 		move()
 
-		elapsed := time.Since(start)
-		extra := (time.Millisecond * 100) - elapsed
-
-		fmt.Fprintf(os.Stderr, "Execution time: %s\nExtra time: %s", elapsed, extra)
+		totalTime.Stop()
+		totalTime.Print()
 	}
 }
 
-func handle_input() []Vector {
+func handleInput() []Vector {
 	var N, P int
 	fmt.Scan(&N, &P)
 
