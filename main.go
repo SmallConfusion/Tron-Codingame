@@ -7,99 +7,99 @@ import (
 )
 
 const (
-	width  = 30
-	height = 20
+	WIDTH  = 30
+	HEIGHT = 20
 )
 
 // ---------- direction ----------
 
-type direction int
+type Direction int
 
 const (
-	right direction = iota
-	down
-	left
-	up
+	RIGHT Direction = iota
+	DOWN
+	LEFT
+	UP
 )
 
-var directions = [...]direction{right, down, left, up}
+var directions = [...]Direction{RIGHT, DOWN, LEFT, UP}
 
-func (d direction) get_vector() vector {
+func (d Direction) GetVector() Vector {
 	switch d {
-	case up:
-		return vector{0, -1}
-	case down:
-		return vector{0, 1}
-	case left:
-		return vector{-1, 0}
-	case right:
-		return vector{1, 0}
+	case UP:
+		return Vector{0, -1}
+	case DOWN:
+		return Vector{0, 1}
+	case LEFT:
+		return Vector{-1, 0}
+	case RIGHT:
+		return Vector{1, 0}
 	}
 
 	panic("Tried to get vector on non existent direction")
 }
 
-func (d direction) print_command() {
+func (d Direction) print_command() {
 	switch d {
-	case up:
+	case UP:
 		fmt.Println("UP")
-	case down:
+	case DOWN:
 		fmt.Println("DOWN")
-	case left:
+	case LEFT:
 		fmt.Println("LEFT")
-	case right:
+	case RIGHT:
 		fmt.Println("RIGHT")
 	}
 }
 
 // ---------- vector ----------
 
-type vector struct {
+type Vector struct {
 	X int
 	Y int
 }
 
-func (v vector) add(x vector) vector {
-	return vector{v.X + x.X, v.Y + x.Y}
+func (v Vector) Add(x Vector) Vector {
+	return Vector{v.X + x.X, v.Y + x.Y}
 }
 
-func (v vector) add_direction(x direction) vector {
-	return v.add(x.get_vector())
+func (v Vector) AddDirection(x Direction) Vector {
+	return v.Add(x.GetVector())
 }
 
-func (v vector) multiply_scalar(x int) vector {
-	return vector{v.X * x, v.Y * x}
+func (v Vector) MultiplyScalar(x int) Vector {
+	return Vector{v.X * x, v.Y * x}
 }
 
-func (v vector) get_index() int {
-	return v.Y*width + v.X
+func (v Vector) GetIndex() int {
+	return v.Y*WIDTH + v.X
 }
 
 // ---------- board ----------
 
-type board [width * height]int
+type Board [WIDTH * HEIGHT]int
 
-func (b *board) set(pos vector, value int) {
-	b[pos.get_index()] = value
+func (b *Board) Set(pos Vector, value int) {
+	b[pos.GetIndex()] = value
 }
 
-func (b board) get(pos vector) int {
-	if pos.X < 0 || pos.X >= width || pos.Y < 0 || pos.Y >= height {
+func (b Board) Get(pos Vector) int {
+	if pos.X < 0 || pos.X >= WIDTH || pos.Y < 0 || pos.Y >= HEIGHT {
 		return 5
 	}
 
-	index := pos.get_index()
+	index := pos.GetIndex()
 
 	return b[index]
 }
 
-func (b board) is_safe(pos vector) bool {
-	safe := b.get(pos) == 0
+func (b Board) IsSafe(pos Vector) bool {
+	safe := b.Get(pos) == 0
 
 	return safe
 }
 
-func (b *board) clear_player(player int) {
+func (b *Board) ClearPlayer(player int) {
 	for index, value := range b {
 		if value == player {
 			b[index] = 0
@@ -107,10 +107,10 @@ func (b *board) clear_player(player int) {
 	}
 }
 
-func (b board) debug_print() {
-	for y := 0; y < height; y++ {
-		for x := 0; x < width; x++ {
-			value := b[vector{x, y}.get_index()]
+func (b Board) DebugPrint() {
+	for y := 0; y < HEIGHT; y++ {
+		for x := 0; x < WIDTH; x++ {
+			value := b[Vector{x, y}.GetIndex()]
 			fmt.Fprintf(os.Stderr, "%d ", value)
 		}
 
@@ -121,10 +121,10 @@ func (b board) debug_print() {
 // ---------- main ----------
 
 var (
-	game = board{}
+	game = Board{}
 
-	current_pos       vector
-	current_direction = left
+	currentPos       Vector
+	currentDirection = LEFT
 )
 
 func main() {
@@ -141,26 +141,26 @@ func main() {
 	}
 }
 
-func handle_input() []vector {
+func handle_input() []Vector {
 	var N, P int
 	fmt.Scan(&N, &P)
 
-	input := []vector{}
+	input := []Vector{}
 
 	for i := 0; i < N; i++ {
 		var X0, Y0, X1, Y1 int
 		fmt.Scan(&X0, &Y0, &X1, &Y1)
 
 		if X0 == -1 {
-			game.clear_player(i + 1)
+			game.ClearPlayer(i + 1)
 			continue
 		}
 
-		game.set(vector{X0, Y0}, i+1)
-		game.set(vector{X1, Y1}, i+1)
+		game.Set(Vector{X0, Y0}, i+1)
+		game.Set(Vector{X1, Y1}, i+1)
 
 		if i == P {
-			current_pos = vector{X1, Y1}
+			currentPos = Vector{X1, Y1}
 		}
 	}
 
@@ -168,32 +168,32 @@ func handle_input() []vector {
 }
 
 func move() {
-	var pot_dir_open [4]int
+	var potDirOpen [4]int
 
 	for i, dir := range directions {
-		pot_dir_open[i] = open_square_count(current_pos, dir)
+		potDirOpen[i] = openSquareCount(currentPos, dir)
 	}
 
-	if pot_dir_open[current_direction] <= 1 {
+	if potDirOpen[currentDirection] <= 1 {
 		var max int
-		var max_index int
+		var maxIndex int
 
-		for index, count := range pot_dir_open {
+		for index, count := range potDirOpen {
 			if max < count {
 				max = count
-				max_index = index
+				maxIndex = index
 			}
 		}
 
-		current_direction = direction(max_index)
+		currentDirection = Direction(maxIndex)
 	}
 
-	current_direction.print_command()
+	currentDirection.print_command()
 }
 
-func open_square_count(pos vector, dir direction) int {
+func openSquareCount(pos Vector, dir Direction) int {
 	for count := 0; ; count++ {
-		if !game.is_safe(pos.add(dir.get_vector().multiply_scalar(count + 1))) {
+		if !game.IsSafe(pos.Add(dir.GetVector().MultiplyScalar(count + 1))) {
 			return count
 		}
 	}
